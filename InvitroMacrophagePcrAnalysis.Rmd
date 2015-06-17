@@ -1,0 +1,32 @@
+---
+title: "InvitroMacrophagePCRanalysis"
+author: "Shruti"
+date: "April 10, 2015"
+output: html_document
+---
+
+This is an R Markdown document to analyze qPCR data from an experiment which tests if SHH can further enhance the expression of cytokines (IL-12, IL-1β, CXCL-2 and TNF) in H. pylori stimulated macrophages. Control gene: HPRT.
+
+```{r Chunk 1: load data}
+if (getwd() != "/Users/shruti/Dropbox/shrutim/Rscripts/qPCR/MacrophagePcr")
+  {
+    setwd(file.path(getwd(),"Dropbox","SHRUTIM","Rscripts","qPCR","MacrophagePcr"))
+  }
+pcr_data <- read.csv("./invitro_WT_03082014_analysis_V2.csv",stringsAsFactors=F)
+```
+
+
+
+```{r Chunk 2: run t.test and generate box plot}
+BoxplotTtest <- function(dataset,gene_name){
+  data <- subset(dataset,gene==gene_name,)
+  Pvalue <- t.test(dCt ~ condition,data)$p.value
+  boxplot(FOLD~condition,data,main=gene_name)
+  return(Pvalue)
+}
+genes <- unique(pcr_data$gene)
+par(mfrow=c(2,2))
+sapply(genes,function(x) {BoxplotTtest(pcr_data,x)})
+```
+
+
